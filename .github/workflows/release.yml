@@ -1,0 +1,106 @@
+# .github/workflows/release.yml
+
+# -----------------------------------------------------------------------------
+# MusicManager - Automated Release Workflow
+# -----------------------------------------------------------------------------
+# This workflow automates the entire release process using semantic-release.
+#
+# Trigger:
+#   - It runs automatically on every push to the 'main' branch.
+#
+# Actions:
+#   1. Analyzes commit messages since the last release (using Conventional Commits).
+#   2. Determines the next semantic version number (MAJOR, MINOR, or PATCH).
+#   3. Generates a formatted CHANGELOG.md file.
+#   4. Updates the __version__ variable in the project's __init__.py file.
+#   5. Commits the changelog and version file back to the repository.
+#   6. Creates a new Git tag for the release (e.g., v1.2.3).
+#   7. Creates a new GitHub Release with the generated changelog notes.
+#   8. Posts a notification with the changelog to a configured Discord channel.
+# -----------------------------------------------------------------------------
+
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    name: Create Release
+    # Use the latest version of Ubuntu for the runner environment
+    runs-on: ubuntu-latest
+
+    steps:
+      # --- Step 1: Checkout Code ---
+      # Checks out the repository's code.
+      # fetch-depth: 0 is CRITICAL for semantic-release to analyze all commits.
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # --- Step 2: Setup Python ---
+      # Installs Python, which is needed by a semantic-release plugin to update
+      # the Python version file.
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      # --- Step 3: Setup Node.js ---
+      # semantic-release is a Node.js application, so we need to set up its environment.
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Use a recent LTS version
+
+      # --- Step 4: Install semantic-release and Plugins ---
+      # Installs semantic-release and the specific plugins needed for this project:
+      # - @semantic-release/git: For committing files (changelog, version file).
+      # - @semantic-release/changelog: For generating the CHANGELOG.md file.
+      # - @semantic-release/exec: For running custom commands, like updating the Python version.
+      - name: Install semantic-release dependencies
+        run: npm install -g semantic-release @semantic-release/git @semantic-release/changelog @semantic-release/exec
+
+      # --- Step 5: Run semantic-release ---
+      # Executes the main semantic-release process.
+      # It reads its configuration from the pyproject.toml file.
+      # The GITHUB_TOKEN is automatically provided by GitHub Actions and is required
+      # for committing to the repo and creating a GitHub Release.
+      - name: Run semantic-release
+        id: semantic # Give this step an ID to reference its outputs later
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
+      
+      # --- Step 6: Post Changelog to Discord ---
+      # This step only runs if the 'semantic' step above created a new release.
+      # It uses a community action to send a formatted webhook to Discord.
+      - name: Post Changelog to Discord
+        if: steps.semantic.outputs.new_release_published == 'true'
+        uses: tsickert/discord-webhook@v5.3.0
+        with:
+          # Securely access the webhook URL from the repository's secrets.
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          
+          # --- Message Content ---
+          # A simple text message that appears above the embed.
+          content: "🎉 A new version of MusicManager has been released! 🎉"
+          
+          # --- Embed Details ---
+          # The title of the embed block, which includes the new version number.
+          embed-title: "New Release: ${{ steps.semantic.outputs.new_release_version }}"
+          
+          # The main body of the embed, containing the full changelog notes.
+          embed-description: "${{ steps.semantic.outputs.new_release_notes }}"
+          
+          # A hex color code (as an integer) for the accent on the side of the embed.
+          embed-color: "3447003" # A nice blue color
+          
+          # The title becomes a clickable link to the new release page on GitHub.
+          embed-url: "${{ steps.semantic.outputs.new_release_git_url }}"
+          
+          # Adds a timestamp to the bottom of the embed.
+          embed-timestamp: true

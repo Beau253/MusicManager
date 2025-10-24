@@ -1,0 +1,65 @@
+# docker-compose.yml
+
+version: '3.8'
+
+services:
+  musicmanager:
+    # Build the Docker image from the Dockerfile in the current directory.
+    build: .
+    
+    # Set a consistent container name for easy management.
+    container_name: musicmanager
+    
+    # Always restart the container unless it is manually stopped.
+    # This ensures the service comes back up after a server reboot.
+    restart: unless-stopped
+    
+    # --- Environment Variables & Secrets ---
+    # This section is for passing secrets and configuration to the container.
+    # It reads from a .env file in the same directory as this docker-compose file.
+    # See the .env.example file for a template.
+    environment:
+      # PUID and PGID are used to set the user/group ID of the 'appuser' inside
+      # the container. This prevents file permission issues on the mounted volumes.
+      # Find yours on Linux with `id -u` and `id -g`.
+      - PUID=1000
+      - PGID=1000
+      
+      # Spotify API Credentials
+      - SPOTIPY_CLIENT_ID=${SPOTIPY_CLIENT_ID}
+      - SPOTIPY_CLIENT_SECRET=${SPOTIPY_CLIENT_SECRET}
+      
+      # Plex API Credentials
+      - PLEX_URL=${PLEX_URL}
+      - PLEX_TOKEN=${PLEX_TOKEN}
+      
+      # Lidarr API Credentials
+      - LIDARR_URL=${LIDARR_URL}
+      - LIDARR_API_KEY=${LIDARR_API_KEY}
+
+    # --- Volumes (Persistent Storage) ---
+    # This section maps directories from your host machine into the container.
+    # This is CRITICAL for data persistence.
+    volumes:
+      # Map a local './config' directory to the /config directory inside the container.
+      # This will store config.toml, picard.ini, the database, and quota files.
+      - ./config:/config
+      
+      # Map your host music library to the /music directory inside the container.
+      # !!! IMPORTANT: You MUST change './music' to the ACTUAL path of your music library on your host machine.
+      # Example: /mnt/user/data/music:/music
+      - ./music:/music
+      
+      # Map a local './logs' directory for persistent log files.
+      - ./logs:/home/appuser/.cache/MusicManager/logs # Path determined by platformdirs inside container
+      
+    # --- Networking (Optional but Recommended) ---
+    # Uncomment the following lines if you run Lidarr/Plex in Docker and want
+    # to connect to them using their service names (e.g., http://lidarr:8686).
+    # networks:
+    #   - media_network
+
+# Uncomment this section to define the shared network.
+# networks:
+#   media_network:
+#     external: true

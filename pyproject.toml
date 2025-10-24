@@ -1,0 +1,105 @@
+# pyproject.toml
+
+# -----------------------------------------------------------------------------
+# PEP 621: Project Metadata
+# -----------------------------------------------------------------------------
+# This section defines the core metadata for the MusicManager package.
+# It is used by build tools like setuptools and pip.
+# -----------------------------------------------------------------------------
+[project]
+name = "music-manager"
+version = "0.0.0"  # This will be automatically updated by semantic-release
+description = "An automated, intelligent management console for your local music library, integrated with Spotify, Lidarr, and Plex."
+authors = [
+    { name = "Your Name", email = "your.email@example.com" },
+]
+readme = "README.md"
+requires-python = ">=3.9"
+license = { file = "LICENSE.md" }
+keywords = ["music", "spotify", "lidarr", "plex", "automation", "downloader", "manager"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Multimedia :: Sound/Audio",
+    "Topic :: Utilities",
+]
+
+# List of runtime dependencies. This should mirror requirements.txt.
+# Keeping both is common for compatibility: requirements.txt for pip install -r,
+# and this for package distribution.
+dependencies = [
+    "click",
+    "python-dotenv",
+    "tomli",
+    "tomli-w",
+    "platformdirs",
+    "spotipy",
+    "requests",
+    "plexapi",
+    "musicbrainzngs",
+    "mutagen",
+    "spotdl",
+    "rapidfuzz",
+]
+
+# Defines optional URLs for the project, like documentation or source code.
+[project.urls]
+Homepage = "https://github.com/your-username/MusicManager"
+"Bug Tracker" = "https://github.com/your-username/MusicManager/issues"
+"Source Code" = "https://github.com/your-username/MusicManager"
+
+# Defines the command-line script entry point.
+# This allows users to run 'music-manager' directly after installation.
+[project.scripts]
+music-manager = "music_manager.main:cli"
+
+# -----------------------------------------------------------------------------
+# Build System Configuration (PEP 518)
+# -----------------------------------------------------------------------------
+# Tells pip and other tools how to build your project.
+# -----------------------------------------------------------------------------
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+# -----------------------------------------------------------------------------
+# Tool-Specific Configurations
+# -----------------------------------------------------------------------------
+# This section is for configuring third-party tools used in the project.
+# -----------------------------------------------------------------------------
+[tool.setuptools]
+packages = ["music_manager"]
+package-dir = {"" = "src"}
+
+[tool.semantic_release]
+# This section configures the automated versioning and release process.
+version_variable = "src/music_manager/__init__.py:__version__" # We will add this file to store the version
+branch = "main"
+upload_to_pypi = false # Set to true if you ever want to publish on PyPI
+upload_to_release = true # Upload assets to the GitHub Release
+build_command = "pip install build && python -m build" # Command to build the package before release
+changelog_file = "CHANGELOG.md"
+
+# Defines how commit messages map to changelog sections.
+[tool.semantic_release.changelog.branches]
+main = "main"
+develop = "develop"
+
+[tool.semantic_release.changelog.sections]
+"Features" = ["feat"]
+"Bug Fixes" = ["fix"]
+"Performance" = ["perf"]
+"Documentation" = ["docs"]
+"Refactoring" = ["refactor"]
+"Styling" = ["style"]
+"Build" = ["build"]
+"CI/CD" = ["ci"]
+"Tests" = ["test"]
+"Chores" = ["chore"]
+"Reverts" = ["revert"]

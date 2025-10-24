@@ -1,0 +1,26 @@
+# -----------------------------------------------------------------------------
+# MusicManager Application Dependencies
+# -----------------------------------------------------------------------------
+# This file lists all Python packages required to run the application.
+# Install these using the command: pip install -r requirements.txt
+# -----------------------------------------------------------------------------
+
+# --- Core Application & CLI ---
+click         # For building the Command-Line Interface (CLI)
+python-dotenv # For loading secrets and config from .env files for local development
+tomli         # For reading the TOML configuration file (config.toml)
+tomli-w       # For writing to the TOML configuration file (used in setup)
+platformdirs  # For finding appropriate, platform-specific user data/config directories
+
+# --- External Service Wrappers ---
+spotipy       # Python client for the Spotify Web API
+requests      # For making direct API calls to Lidarr and Plex
+plexapi       # High-level Python wrapper for the Plex Media Server API
+musicbrainzngs# For interacting with the MusicBrainz API (used in library scanner & Lidarr)
+
+# --- Music & Metadata Handling ---
+mutagen       # For reading and writing audio metadata tags (ID3, MP4, etc.)
+spotdl        # Used as a library for downloading and metadata embedding logic
+
+# --- Utility & Helper Libraries ---
+rapidfuzz     # For fuzzy string matching (used in Lidarr artist/album lookups)

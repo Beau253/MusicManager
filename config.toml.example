@@ -1,0 +1,124 @@
+# -----------------------------------------------------------------------------
+# MusicManager Configuration File (config.toml)
+# -----------------------------------------------------------------------------
+# This is an example file. On first run, a default version of this file will
+# be created in your configuration directory (e.g., /config/config.toml).
+#
+# It is recommended to use the interactive 'setup' command to configure
+# your application: `python src/music_manager/main.py settings setup`
+# -----------------------------------------------------------------------------
+
+
+# --- [main]: Core Application Paths ---
+# These paths define the folder structure for your music library.
+[main]
+
+# The absolute root path of your music collection. All other paths are relative to this.
+# In Docker, this should match the container-side of your music volume mapping (e.g., /music).
+music_root_dir = "/music"
+
+# The subdirectory within 'music_root_dir' where new, untagged files are downloaded.
+unorganized_subdir = "unorganized_downloads"
+
+# The subdirectory within 'music_root_dir' where final, tagged, and organized files are stored.
+organized_subdir = "organized_library"
+
+# The subdirectory within 'music_root_dir' where .m3u playlist files will be saved.
+playlist_subdir = "Playlists"
+
+
+# --- [spotify]: Spotify API Settings ---
+# Credentials are required for searching, fetching playlist data, and more.
+# It is HIGHLY RECOMMENDED to set these as environment variables instead of in this file.
+[spotify]
+
+# Your Client ID from the Spotify Developer Dashboard.
+# Environment Variable: SPOTIPY_CLIENT_ID
+client_id = "YOUR_SPOTIFY_CLIENT_ID"
+
+# Your Client Secret from the Spotify Developer Dashboard.
+# Environment Variable: SPOTIPY_CLIENT_SECRET
+client_secret = "YOUR_SPOTIFY_CLIENT_SECRET"
+
+# A list of Spotify playlist URLs to monitor and sync.
+# Example: playlist_urls = ["https://open.spotify.com/playlist/...", "https://open.spotify.com/playlist/..."]
+playlist_urls = []
+
+
+# --- [downloader]: Track Acquisition Settings ---
+# Controls the behavior of the external downloader service ('onthespot').
+[downloader]
+
+# The maximum number of new tracks to download in a single 24-hour period.
+# This is a crucial safeguard to avoid API bans.
+daily_track_limit = 75
+
+# The desired audio format for downloaded files (e.g., m4a, mp3, flac, opus).
+download_format = "m4a"
+
+# The desired audio bitrate (e.g., 320k, 192k) or 'auto' for best available.
+download_bitrate = "auto"
+
+
+# --- [plex]: Plex Media Server Integration ---
+# Settings for connecting to your Plex server.
+# It is HIGHLY RECOMMENDED to set the token as an environment variable.
+[plex]
+
+# The full URL to your Plex server, including the port.
+# Environment Variable: PLEX_URL
+url = "http://PLEX_IP_OR_HOSTNAME:32400"
+
+# Your Plex authentication token.
+# Environment Variable: PLEX_TOKEN
+token = "YOUR_PLEX_TOKEN"
+
+# The name of your music library in Plex (case-sensitive).
+library_name = "Music"
+
+
+# --- [lidarr]: Lidarr Integration ---
+# Settings for connecting to your Lidarr instance.
+# It is HIGHLY RECOMMENDED to set the API key as an environment variable.
+[lidarr]
+
+# The full URL to your Lidarr instance, including the port.
+# Environment Variable: LIDARR_URL
+url = "http://LIDARR_IP_OR_HOSTNAME:8686"
+
+# Your Lidarr API Key (found in Lidarr under Settings > General).
+# Environment Variable: LIDARR_API_KEY
+api_key = "YOUR_LIDARR_API_KEY"
+
+
+# --- [features]: Toggleable Application Features ---
+# Enable or disable major application features.
+[features]
+
+# If true, the application will generate .m3u playlist files in the 'playlist_subdir'.
+m3u_generator_enabled = true
+
+# If true, the application will attempt to create/update native playlists directly in Plex.
+# Requires a valid Plex configuration.
+plex_playlist_sync_enabled = true
+
+
+# --- [logging]: Logging Configuration ---
+# Controls the verbosity of log messages.
+[logging]
+
+# The log level for messages displayed in the console.
+# Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
+log_level_console = "INFO"
+
+# The log level for messages written to the persistent log file.
+# It is recommended to keep this at DEBUG for detailed troubleshooting.
+log_level_file = "DEBUG"
+
+
+# --- [support]: Community Support Settings ---
+# Configuration for the 'support' command.
+[support]
+
+# The full invite URL for your community Discord server.
+discord_invite_url = "https://discord.gg/YOUR_INVITE_CODE"
