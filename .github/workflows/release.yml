@@ -22,6 +22,7 @@ jobs:
       contents: write      # Allow read/write access to repository contents
       issues: write        # Allow creating/commenting on issues (used by some plugins)
       pull-requests: write # Allow creating/commenting on PRs (used by some plugins)
+      packages: write     # Allow publishing to GitHub Packages (if applicable)
     # ====================================================================
     # ======================== END OF NEW BLOCK ========================
     # ====================================================================
