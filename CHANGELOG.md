@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/Beau253/MusicManager/compare/v1.0.1...v1.0.2) (2025-10-24)
+
+
+### Bug Fixes
+
+* **ci:** add build-essential to Dockerfile for pip compilation ([dcb47c7](https://github.com/Beau253/MusicManager/commit/dcb47c70cdd519fa5c1be28ea7dcaafd408df267))
+
 ## [1.0.1](https://github.com/Beau253/MusicManager/compare/v1.0.0...v1.0.1) (2025-10-24)
 
 
