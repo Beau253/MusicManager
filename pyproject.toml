@@ -8,7 +8,7 @@
 # -----------------------------------------------------------------------------
 [project]
 name = "music-manager"
-version = "1.0.2"  # This will be automatically updated by semantic-release
+version = "1.0.3"  # This will be automatically updated by semantic-release
 description = "An automated, intelligent management console for your local music library, integrated with Spotify, Lidarr, and Plex."
 authors = [
     { name = "Your Name", email = "your.email@example.com" },
