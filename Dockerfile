@@ -21,7 +21,7 @@ RUN \
     # --- Git is required by some release tools and is good practice ---
     git \
     # --- Critical Application Runtime Dependencies ---
-    chromaprint-tools \
+    libchromaprint-tools \
     picard \
     ffmpeg && \
     # --- Cleanup ---
