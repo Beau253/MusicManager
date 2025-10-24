@@ -16,7 +16,8 @@ platformdirs  # For finding appropriate, platform-specific user data/config dire
 spotipy       # Python client for the Spotify Web API
 requests      # For making direct API calls to Lidarr and Plex
 plexapi       # High-level Python wrapper for the Plex Media Server API
-musicbrainzngs# For interacting with the MusicBrainz API (used in library scanner & Lidarr)
+# For interacting with the MusicBrainz API (used in library scanner & Lidarr)
+musicbrainzngs
 
 # --- Music & Metadata Handling ---
 mutagen       # For reading and writing audio metadata tags (ID3, MP4, etc.)
