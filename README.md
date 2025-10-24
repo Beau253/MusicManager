@@ -7,7 +7,7 @@
 *MusicManager is an intelligent, self-hosted application that acts as the central brain for your music collection. It automatically syncs with Spotify, downloads new tracks, enriches metadata using MusicBrainz, and integrates deeply with your existing media servers like Lidarr and Plex.*
 
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE.md)
-[![Discord](https://img.shields.io/discord/YOUR_DISCORD_SERVER_ID?label=Community&logo=discord&style=for-the-badge)](https://discord.gg/YOUR_INVITE_CODE)
+[![Discord](https://img.shields.io/discord/YOUR_DISCORD_SERVER_ID?label=Community&logo=discord&style=for-the-badge)](https://discord.gg/xYPq5dYZnC)
 
 </div>
 
