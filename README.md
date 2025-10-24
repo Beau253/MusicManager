@@ -159,7 +159,7 @@ The CLI is organized into logical groups.
 
 **Having trouble or have a great idea? Join our Discord server!**
 
-[![Discord](https://img.shields.io/discord/YOUR_DISCORD_SERVER_ID?label=Join%20the%20Community&logo=discord&style=for-the-badge&logoColor=white)](https://discord.gg/YOUR_INVITE_CODE)
+[![Discord](https://img.shields.io/discord/1431128260271673386?label=Community&logo=discord&style=for-the-badge)](https://discord.gg/xYPq5dYZnC)
 
 </div>
 
