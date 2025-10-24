@@ -18,6 +18,8 @@ RUN \
     python3.11 \
     python3.11-venv \
     python3-pip \
+    # --- Build tools for compiling Python packages ---
+    build-essential \
     # --- Git is required by some release tools and is good practice ---
     git \
     # --- Critical Application Runtime Dependencies ---
