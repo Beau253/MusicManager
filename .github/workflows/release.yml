@@ -44,7 +44,7 @@ jobs:
 
       - name: Install semantic-release and Plugins
         # Note: Added @semantic-release/exec for our pyproject.toml setup
-        run: npm install -g semantic-release @semantic-release/git @semantic-release/changelog @semantic-release/exec
+        run: npm install -g semantic-release @semantic-release/git @semantic-release/changelog @semantic-release/exec @semantic-release/commit-analyzer @semantic-release/release-notes-generator
 
       - name: Run semantic-release
         id: semantic
