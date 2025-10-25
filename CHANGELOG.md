@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/Beau253/MusicManager/compare/v1.0.2...v1.0.3) (2025-10-24)
+
+
+### Bug Fixes
+
+* **deps:** correct format of requirements.txt ([008f519](https://github.com/Beau253/MusicManager/commit/008f5195edda894afcc177a3c46bc95d91adacfd))
+
 ## [1.0.2](https://github.com/Beau253/MusicManager/compare/v1.0.1...v1.0.2) (2025-10-24)
 
 
