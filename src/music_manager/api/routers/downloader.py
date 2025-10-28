@@ -1,6 +1,6 @@
 # src/music_manager/api/routers/downloader.py
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from typing import Optional
 
 from music_manager.services.downloader_service import DownloaderService
@@ -12,18 +12,20 @@ router = APIRouter(
 )
 
 @router.post("/run", summary="Run the downloader process")
-def run_downloader_api(downloader: DownloaderService = Depends(get_downloader)):
+def run_downloader_api(
+    background_tasks: BackgroundTasks,
+    downloader: DownloaderService = Depends(get_downloader)
+):
     """
     Triggers the downloader service to process all tracks in the 'queued' state.
-    This is an asynchronous operation on the backend.
+    The process is run in the background and the API returns immediately.
     """
     try:
-        # In a real-world scenario, this would likely be a background task.
-        # For simplicity, we run it directly but should not block for long.
-        downloader.run()
-        return {"message": "Downloader process initiated successfully."}
+        # Add the long-running task to be executed after the response is sent.
+        background_tasks.add_task(downloader.run)
+        return {"message": "Downloader process started in the background."}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to run downloader: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to start downloader process: {e}")
 
 @router.post("/retry", summary="Retry failed downloads")
 def retry_failed_api(
