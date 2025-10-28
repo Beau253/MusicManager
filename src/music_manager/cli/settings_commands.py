@@ -4,6 +4,8 @@ import click
 import logging
 from pathlib import Path
 
+from music_manager.services.validation_service import ValidationService
+
 # -----------------------------------------------------------------------------
 # Settings Command Group
 # -----------------------------------------------------------------------------
@@ -115,32 +117,25 @@ def validate_command(ctx):
     It checks paths, dependencies, and all external API connections.
     """
     logger = ctx.obj['logger']
-    
     click.secho("--- Running Configuration Validator ---", fg="cyan", bold=True)
     
-    # --- This would call a high-level workflow function ---
-    # from music_manager.workflows.validation_workflow import run_validation
-    # success = run_validation(ctx.obj)
+    # Use the centralized validation service
+    validation_service = ValidationService(ctx.obj)
+    results = validation_service.run_all_checks()
     
-    # Placeholder for now:
-    click.echo("\n[1/4] Checking Core Paths...")
-    click.secho("  - OK: Music Root Directory", fg="green")
+    all_successful = True
+    for check_name, success, message in results:
+        if success:
+            icon = click.style("✔ OK", fg="green")
+        else:
+            icon = click.style("✖ FAIL", fg="red")
+            all_successful = False
+        click.echo(f"  {icon}: [{check_name}] - {message}")
     
-    click.echo("\n[2/4] Checking Dependencies...")
-    click.secho("  - OK: Picard found", fg="green")
-    click.secho("  - OK: fpcalc (AcoustID) found", fg="green")
-    
-    click.echo("\n[3/4] Checking API Connections...")
-    click.secho("  - OK: Spotify API credentials are valid.", fg="green")
-    click.secho("  - OK: Connected to Lidarr server successfully.", fg="green")
-    click.secho("  - OK: Connected to Plex server successfully.", fg="green")
-    
-    click.secho("\n--- Validation Successful: Your configuration appears to be correct! ---", fg="green")
-    
-    # Example of a failure:
-    # click.secho("\n[3/4] Checking API Connections...")
-    # click.secho("  - FAIL: Could not connect to Plex. Please check URL and Token.", fg="red")
-    # click.secho("\n--- Validation Failed: Please review the errors above. ---", fg="red")
+    if all_successful:
+        click.secho("\n--- Validation Successful: Your configuration appears to be correct! ---", fg="green", bold=True)
+    else:
+        click.secho("\n--- Validation Failed: Please review the errors above. ---", fg="red", bold=True)
 
 @settings_group.command(name="set-log-level", help="Temporarily change the console log level.")
 @click.argument("level", type=click.Choice(["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], case_sensitive=False))

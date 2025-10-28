@@ -67,3 +67,11 @@ class LidarrArtistSearchResult(BaseModel):
     statistics: Optional[dict] = None
     status: str
     id: Optional[int] = None # Lidarr's internal ID
+
+class ValidationResult(BaseModel):
+    """
+    Represents the result of a single validation check.
+    """
+    check_name: str
+    success: bool
+    message: str

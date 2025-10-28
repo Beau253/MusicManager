@@ -2,10 +2,12 @@
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 from music_manager.core.config_manager import ConfigManager
-from music_manager.api.dependencies import get_config
+from music_manager.api.dependencies import get_config, get_app_context
+from music_manager.api.models import ValidationResult
+from music_manager.services.validation_service import ValidationService
 
 router = APIRouter(
     prefix="/settings",
@@ -55,3 +57,16 @@ def update_setting(
         return {"message": f"Setting '{update.key}' in section '{update.section}' updated successfully."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to update setting: {e}")
+
+@router.post("/validate", summary="Validate all external API connections", response_model=List[ValidationResult])
+def validate_connections_api(app_context: dict = Depends(get_app_context)):
+    """
+    Performs a health check on all configured external services (Spotify, Plex, Lidarr)
+    and core path configurations.
+    """
+    validation_service = ValidationService(app_context)
+    results = validation_service.run_all_checks()
+
+    # Convert the list of tuples to a list of Pydantic models for the response
+    response_data = [ValidationResult(check_name=name, success=status, message=msg) for name, status, msg in results]
+    return response_data
