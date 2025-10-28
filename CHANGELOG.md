@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/Beau253/MusicManager/compare/v1.1.0...v1.2.0) (2025-10-28)
+
+
+### Features
+
+* **spotify:** Add 'fields' option to get_playlist_tracks ([63ff7eb](https://github.com/Beau253/MusicManager/commit/63ff7eb92e49a8daf6c762cce2338f22b56b85bf))
+
 # [1.1.0](https://github.com/Beau253/MusicManager/compare/v1.0.3...v1.1.0) (2025-10-28)
 
 
