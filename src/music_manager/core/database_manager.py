@@ -241,24 +241,60 @@ class DatabaseManager:
         return None
 
     def remove_track(self, spotify_uri: str) -> bool:
-        # Placeholder for the CLI 'db remove' command
         logger.debug(f"Removing track with Spotify URI: {spotify_uri}")
-        return True
+        try:
+            cursor = self._execute("DELETE FROM tracks WHERE spotify_uri = ?", (spotify_uri,))
+            self.conn.commit()
+            # The rowcount attribute will be > 0 if a row was deleted.
+            if cursor.rowcount > 0:
+                logger.info(f"Successfully removed track '{spotify_uri}' from the database.")
+                return True
+            else:
+                logger.warning(f"Attempted to remove track '{spotify_uri}', but it was not found in the database.")
+                return False
+        except sqlite3.Error as e:
+            logger.error(f"Failed to remove track '{spotify_uri}' due to a database error: {e}", exc_info=True)
+            self.conn.rollback()
+            return False
         
     def reset_all_failed_tracks(self) -> int:
-        # Placeholder for the CLI 'db retry --all' command
         logger.debug("Resetting all failed tracks.")
-        return 5 # Dummy count
+        sql = "UPDATE tracks SET status = 'queued', fail_count = 0, error_message = NULL, last_attempt_date = NULL WHERE status = 'failed'"
+        try:
+            cursor = self._execute(sql)
+            self.conn.commit()
+            logger.info(f"Reset {cursor.rowcount} failed tracks to 'queued' status.")
+            return cursor.rowcount
+        except sqlite3.Error as e:
+            logger.error(f"Failed to reset all failed tracks due to a database error: {e}", exc_info=True)
+            self.conn.rollback()
+            return 0
         
     def reset_track_status(self, spotify_uri: str) -> bool:
-        # Placeholder for the CLI 'db retry <uri>' command
         logger.debug(f"Resetting status for track: {spotify_uri}")
-        return True
+        sql = "UPDATE tracks SET status = 'queued', fail_count = 0, error_message = NULL, last_attempt_date = NULL WHERE spotify_uri = ? AND status = 'failed'"
+        try:
+            cursor = self._execute(sql, (spotify_uri,))
+            self.conn.commit()
+            return cursor.rowcount > 0
+        except sqlite3.Error as e:
+            logger.error(f"Failed to reset status for track '{spotify_uri}' due to a database error: {e}", exc_info=True)
+            self.conn.rollback()
+            return False
 
     def queue_track(self, spotify_uri, artist_name, track_name, album_name) -> tuple[bool, str]:
-        # Placeholder for the CLI 'spotify manual-add' command
         logger.debug(f"Queuing track: {spotify_uri}")
-        return True, f"Successfully queued track '{artist_name} - {track_name}'."
+        sql = "INSERT INTO tracks (spotify_uri, artist_name_spotify, track_name_spotify, album_name_spotify, status, added_date) VALUES (?, ?, ?, ?, 'queued', ?)"
+        try:
+            self._execute(sql, (spotify_uri, artist_name, track_name, album_name, datetime.now()))
+            self.conn.commit()
+            msg = f"Successfully queued track '{artist_name} - {track_name}'."
+            logger.info(msg)
+            return True, msg
+        except sqlite3.IntegrityError:
+            msg = f"Track with URI '{spotify_uri}' already exists in the database."
+            logger.warning(msg)
+            return False, msg
 
     def get_paths_for_uris(self, spotify_uris: list[str]) -> dict:
         """
