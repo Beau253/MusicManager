@@ -5,17 +5,18 @@ from typing import List, Optional
 
 from music_manager.core.database_manager import DatabaseManager
 from music_manager.api.dependencies import get_db
+from music_manager.api.models import TrackBase, TrackDetails
 
 router = APIRouter(
     prefix="/db",
     tags=["Database"],
 )
 
-@router.get("/tracks", summary="Search for tracks in the database")
+@router.get("/tracks", summary="Search for tracks in the database", response_model=List[TrackBase])
 def search_tracks_api(
     query: Optional[str] = None,
     status: Optional[str] = None,
-    db: DatabaseManager = Depends(get_db)
+    db: DatabaseManager = Depends(get_db),
 ):
     """
     Searches the database for tracks matching the given criteria.
@@ -27,14 +28,14 @@ def search_tracks_api(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database query failed: {e}")
 
-@router.get("/track/{spotify_uri}", summary="Get details for a specific track")
+@router.get("/track/{spotify_uri}", summary="Get details for a specific track", response_model=TrackDetails)
 def get_track_details_api(spotify_uri: str, db: DatabaseManager = Depends(get_db)):
     """
     Retrieves detailed information for a single track by its Spotify URI.
     """
     details = db.get_track_details(spotify_uri)
-    if not details or "This method needs to be implemented" in details.get("message", ""):
-         raise HTTPException(status_code=404, detail=f"Track with URI '{spotify_uri}' not found or method not implemented.")
+    if not details:
+         raise HTTPException(status_code=404, detail=f"Track with URI '{spotify_uri}' not found.")
     return details
 
 @router.delete("/track/{spotify_uri}", summary="Remove a track from the database")

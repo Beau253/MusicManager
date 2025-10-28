@@ -195,15 +195,50 @@ class DatabaseManager:
     # in the blueprint. You would implement the actual SQL for each one.
     
     def search_tracks(self, query: str = None, status: str = None) -> list:
-        # Placeholder for the CLI 'db list' command
         logger.debug(f"Searching tracks with query='{query}' and status='{status}'")
-        # In a real implementation, you would build a dynamic SQL query here.
-        return [{"artist": "Example Artist", "title": "Example Track", "status": "organized", "spotify_uri": "spotify:track:123"}]
+        
+        sql = "SELECT * FROM tracks"
+        conditions = []
+        params = []
+
+        if query:
+            # Search across multiple relevant fields
+            conditions.append("(artist_name_spotify LIKE ? OR track_name_spotify LIKE ? OR album_name_spotify LIKE ?)")
+            like_query = f"%{query}%"
+            params.extend([like_query, like_query, like_query])
+        
+        if status:
+            conditions.append("status = ?")
+            params.append(status)
+
+        if conditions:
+            sql += " WHERE " + " AND ".join(conditions)
+            
+        sql += " ORDER BY added_date DESC"
+
+        cursor = self._execute(sql, tuple(params))
+        # Convert rows to dictionaries for easier JSON serialization
+        return [dict(row) for row in cursor.fetchall()]
 
     def get_track_details(self, spotify_uri: str) -> dict:
-        # Placeholder for the CLI 'db info' command
         logger.debug(f"Getting details for Spotify URI: {spotify_uri}")
-        return {"message": "This method needs to be implemented with SQL."}
+        
+        # This query joins the 'tracks' and 'metadata' tables to get a complete picture.
+        sql = """
+            SELECT t.*, m.*
+            FROM tracks t
+            LEFT JOIN metadata m ON t.id = m.track_db_id
+            WHERE t.spotify_uri = ?
+        """
+        cursor = self._execute(sql, (spotify_uri,))
+        row = cursor.fetchone()
+
+        if row:
+            # Convert the single row to a dictionary
+            return dict(row)
+        
+        # Return None or an empty dict if not found
+        return None
 
     def remove_track(self, spotify_uri: str) -> bool:
         # Placeholder for the CLI 'db remove' command
