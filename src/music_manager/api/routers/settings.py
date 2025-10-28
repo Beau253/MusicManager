@@ -4,7 +4,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from typing import Dict, Any
 
-from music_manager.api.dependencies import config_manager
+from music_manager.core.config_manager import ConfigManager
+from music_manager.api.dependencies import get_config
 
 router = APIRouter(
     prefix="/settings",
@@ -17,12 +18,15 @@ class SettingsUpdate(BaseModel):
     value: Any
 
 @router.get("/", summary="Get all configuration settings")
-def get_settings(show_secrets: bool = False) -> Dict[str, Any]:
+def get_settings(
+    show_secrets: bool = False,
+    config_manager: ConfigManager = Depends(get_config)
+) -> Dict[str, Any]:
     """
     Retrieves the current application configuration.
     Sensitive values are masked by default.
     """
-    config_dict = config_manager.get_config_as_dict()
+    config_dict = config_manager.get_config_as_dict() # type: ignore
     if show_secrets:
         return config_dict
 
@@ -38,7 +42,10 @@ def get_settings(show_secrets: bool = False) -> Dict[str, Any]:
     return masked_config
 
 @router.post("/update", summary="Update a configuration setting")
-def update_setting(update: SettingsUpdate):
+def update_setting(
+    update: SettingsUpdate,
+    config_manager: ConfigManager = Depends(get_config)
+):
     """
     Updates a specific setting in the configuration and saves the file.
     """

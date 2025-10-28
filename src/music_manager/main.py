@@ -10,15 +10,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # --- Core Application Imports ---
-from music_manager import __version__
-from music_manager.core.config_manager import ConfigManager
-from music_manager.core.database_manager import DatabaseManager
-from music_manager.core.logger import setup_logging
-
-# --- Wrapper Imports for Context ---
-from music_manager.wrappers.spotify_wrapper import SpotifyWrapper
-from music_manager.wrappers.plex_wrapper import PlexWrapper
-from music_manager.wrappers.lidarr_wrapper import LidarrWrapper
+from music_manager.core.app_factory import create_app_context
 
 # --- CLI Command Group Imports ---
 from music_manager.cli.db_commands import db_group
@@ -29,6 +21,7 @@ from music_manager.cli.plex_commands import plex_group
 from music_manager.cli.settings_commands import settings_group
 from music_manager.cli.spotify_commands import spotify_group
 from music_manager.cli.support_commands import support_command
+from music_manager import __version__
 
 # -----------------------------------------------------------------------------
 # API Server Command
@@ -58,43 +51,10 @@ def cli(ctx):
     It initializes and provides core components like the configuration manager,
     database, and logger to all sub-commands via the context object.
     """
-    # Ensure the context object is a dictionary.
-    ctx.ensure_object(dict)
-
-    try:
-        # --- 1. Initialize Configuration Manager ---
-        # This is the first component to be initialized as it drives all other settings.
-        config_manager = ConfigManager()
-        ctx.obj['config'] = config_manager
-
-        # --- 2. Initialize Logging ---
-        # The logger is configured based on settings from the ConfigManager.
-        logger = setup_logging(
-            log_level_console=config_manager.get_logging_setting("log_level_console"),
-            log_level_file=config_manager.get_logging_setting("log_level_file")
-        )
-        ctx.obj['logger'] = logger
-
-        # --- 3. Initialize Database Manager ---
-        # The database path is retrieved from the config.
-        db_manager = DatabaseManager(
-            db_path=config_manager.get_path("database_file")
-        )
-        ctx.obj['db'] = db_manager
-        
-        # --- 4. Initialize API Wrappers ---
-        # These wrappers are made available to any command that needs them.
-        # They are initialized with the config manager to get their settings.
-        ctx.obj['spotify'] = SpotifyWrapper(config_manager)
-        ctx.obj['plex'] = PlexWrapper(config_manager)
-        ctx.obj['lidarr'] = LidarrWrapper(config_manager)
-
-    except Exception as e:
-        # If a critical error happens during setup (e.g., can't write to log file),
-        # print it and exit to prevent further issues.
-        click.echo(f"FATAL: A critical error occurred during application initialization: {e}", err=True)
-        # Using a distinct exit code for setup failure.
-        exit(1)
+    # Use the central factory to create the application context.
+    # This ensures all core components are initialized consistently.
+    ctx.obj = create_app_context()
+    
 
 # --- Register all command groups and standalone commands ---
 cli.add_command(db_group)
