@@ -3,7 +3,7 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
-from music_manager.api.dependencies import initialize_dependencies, db_manager
+from music_manager.api.dependencies import initialize_dependencies, get_app_context
 from music_manager.api.routers import settings, db, downloader, plex, lidarr, spotify
 
 @asynccontextmanager
@@ -14,8 +14,11 @@ async def lifespan(app: FastAPI):
     print("--- Dependencies initialized ---")
     yield
     # Code to run on application shutdown
-    if db_manager:
-        db_manager.close()
+    app_context = get_app_context()
+    if app_context and 'db' in app_context:
+        db_manager = app_context.get('db')
+        if db_manager:
+            db_manager.close()
     print("--- MusicManager API Shutting Down ---")
 
 
