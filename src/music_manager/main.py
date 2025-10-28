@@ -31,6 +31,19 @@ from music_manager.cli.spotify_commands import spotify_group
 from music_manager.cli.support_commands import support_command
 
 # -----------------------------------------------------------------------------
+# API Server Command
+# -----------------------------------------------------------------------------
+
+@click.command()
+@click.option('--host', default='0.0.0.0', help='The host to bind to.')
+@click.option('--port', default=8000, type=int, help='The port to run on.')
+def api(host, port):
+    """Launch the MusicManager REST API server."""
+    click.echo(f"Starting MusicManager API server on http://{host}:{port}")
+    import uvicorn
+    uvicorn.run("music_manager.api.main:app", host=host, port=port, reload=False)
+
+# -----------------------------------------------------------------------------
 # Main CLI Group
 # -----------------------------------------------------------------------------
 
@@ -92,6 +105,7 @@ cli.add_command(plex_group)
 cli.add_command(settings_group)
 cli.add_command(spotify_group)
 cli.add_command(support_command)
+cli.add_command(api)
 
 # -----------------------------------------------------------------------------
 # Application Entry Point

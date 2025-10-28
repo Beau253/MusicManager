@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
 from music_manager.api.dependencies import initialize_dependencies, db_manager
-from music_manager.api.routers import settings, db
+from music_manager.api.routers import settings, db, downloader, plex
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -29,7 +29,9 @@ app = FastAPI(
 # Include the routers from the different modules
 app.include_router(settings.router)
 app.include_router(db.router)
-# Future routers for plex, lidarr, etc. would be included here
+app.include_router(downloader.router)
+app.include_router(plex.router)
+# Future routers for lidarr, etc. would be included here
 
 @app.get("/", tags=["Root"])
 async def read_root():
