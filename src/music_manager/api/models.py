@@ -44,3 +44,26 @@ class TrackDetails(TrackBase):
     length_ms: Optional[int] = None
     file_quality: Optional[str] = None
     final_filepath_relative: Optional[str] = None
+
+class LidarrQueueItem(BaseModel):
+    """
+    Represents a single item in the Lidarr activity queue.
+    Fields are based on the Lidarr API response.
+    """
+    artistName: Optional[str] = None
+    albumTitle: Optional[str] = None
+    status: Optional[str] = None
+    timeleft: Optional[str] = None
+    progress: Optional[float] = None
+    indexer: Optional[str] = None
+
+class LidarrArtistSearchResult(BaseModel):
+    """
+    Represents a single artist from a Lidarr search result.
+    """
+    artistName: str
+    foreignArtistId: str # This is the MusicBrainz ID
+    overview: Optional[str] = None
+    statistics: Optional[dict] = None
+    status: str
+    id: Optional[int] = None # Lidarr's internal ID
