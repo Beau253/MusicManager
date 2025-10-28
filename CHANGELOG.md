@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/Beau253/MusicManager/compare/v1.2.0...v1.2.1) (2025-10-28)
+
+
+### Bug Fixes
+
+* **docker:** Correct package names and add PPA for dependencies ([5c801e5](https://github.com/Beau253/MusicManager/commit/5c801e52cd266645c5be23e9eaa7f7940d4ba069))
+
 # [1.2.0](https://github.com/Beau253/MusicManager/compare/v1.1.0...v1.2.0) (2025-10-28)
 
 
